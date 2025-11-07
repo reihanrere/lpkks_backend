@@ -2,6 +2,8 @@
 
 namespace App\Domain\Product\Controllers;
 
+use App\Domain\Product\Requests\StoreProductRequest;
+use App\Domain\Product\Requests\UpdateProductRequest;
 use App\Domain\Product\Resources\ProductResource;
 use App\Domain\Product\Services\ProductService;
 use App\Http\Controllers\Controller;
@@ -112,16 +114,10 @@ class ProductController extends Controller
      *     )
      * )
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreProductRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'product_name' => 'required|string',
-            'qty' => 'required|integer'
-        ]);
-
-        $product = $this->service->createProduct($data);
-
-        return $this->success(new ProductResource($product), "Product created");
+        $product = $this->service->createProduct($request->validated());
+        return $this->success(new ProductResource($product), "Product created", 201);
     }
 
     /**
@@ -153,20 +149,14 @@ class ProductController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(UpdateProductRequest $request, int $id): JsonResponse
     {
-        $data = $request->validate([
-            'product_name' => 'sometimes|string',
-            'qty' => 'sometimes|integer'
-        ]);
-
         $is_exist = $this->service->getProduct($id);
         if (!$is_exist) {
-            return $this->error("Product not found", null,  404);
+            return $this->error("Product not found", null, 404);
         }
 
-        $product = $this->service->updateProduct($id, $data);
-
+        $product = $this->service->updateProduct($id, $request->validated());
         return $this->success(new ProductResource($product), "Product updated");
     }
 

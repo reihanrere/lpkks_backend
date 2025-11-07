@@ -21,12 +21,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        DB::listen(function ($query) {
-            Log::info('SQL Query', [
-                'sql' => $query->sql,
-                'bindings' => $query->bindings,
-                'time' => $query->time . ' ms',
-            ]);
-        });
+        if (config('app.debug')) {
+            DB::listen(function ($query) {
+                Log::info('SQL Query', [
+                    'sql' => $query->sql,
+                    'bindings' => $query->bindings,
+                    'time' => $query->time . ' ms',
+                ]);
+            });
+        }
     }
 }
