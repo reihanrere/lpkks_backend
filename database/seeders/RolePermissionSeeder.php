@@ -11,8 +11,12 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // create base role
-        $admin = Role::firstOrCreate(['name' => 'admin']);
-        $user = Role::firstOrCreate(['name' => 'user']);
+        $admin = Role::firstOrCreate(
+            ['name' => 'admin', 'guard_name' => 'api']
+        );
+        $user = Role::firstOrCreate(
+            ['name' => 'user', 'guard_name' => 'api']
+        );
 
         // create base permission
         $permissions = [
@@ -23,11 +27,15 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+            Permission::firstOrCreate(
+                ['name' => $permission, 'guard_name' => 'api']
+            );
         }
 
-        // Assign permissions to role
-        $admin->givePermissionTo($permissions);
-        $user->givePermissionTo(['view products']);
+        $admin->syncPermissions(Permission::all());
+
+        $user->syncPermissions([
+            'view products',
+        ]);
     }
 }

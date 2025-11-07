@@ -22,7 +22,8 @@ Route::prefix('auth')->group(function () {
 
 // Product routes
 Route::prefix('products')
-    ->middleware(['auth:api', 'role:admin'])
+    ->middleware('auth:api')
+    ->middleware('role:admin')
     ->group(function () {
         Route::get('/', [ProductController::class, 'index']);
         Route::get('/{id}', [ProductController::class, 'show']);

@@ -18,13 +18,21 @@ class ProductController extends Controller
 
     public function __construct(
         protected ProductService $service
-    ) {}
+    ) {
+        $this->middleware('auth:api');
+
+        $this->middleware('permission:view products')->only(['index', 'show']);
+        $this->middleware('permission:create products')->only(['store']);
+        $this->middleware('permission:update products')->only(['update']);
+        $this->middleware('permission:delete products')->only(['destroy']);
+    }
 
     /**
      * @OA\Get(
      *     path="/api/products",
      *     summary="Get paginated product list",
      *     tags={"Products"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
@@ -76,6 +84,7 @@ class ProductController extends Controller
      *     path="/api/products/{id}",
      *     tags={"Products"},
      *     summary="Get product by id",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true),
      *     @OA\Response(response=200, description="Success")
      * )
@@ -96,6 +105,7 @@ class ProductController extends Controller
      *     path="/api/products",
      *     tags={"Products"},
      *     summary="Create new product",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -125,6 +135,7 @@ class ProductController extends Controller
      *     path="/api/products/{id}",
      *     tags={"Products"},
      *     summary="Update product data",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -165,6 +176,7 @@ class ProductController extends Controller
      *     path="/api/products/{id}",
      *     tags={"Products"},
      *     summary="Delete product by id",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
