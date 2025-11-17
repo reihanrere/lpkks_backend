@@ -9,13 +9,10 @@ class ProductRepository
     public function paginate($page, $size, $search)
     {
         return Product::orderBy('id', 'desc')
-            ->where('product_name', 'like', '%' . $search . '%')
-            ->paginate(
-                $size,
-                ['*'],
-                'page',
-                $page
-            );
+            ->when($search, fn ($q) =>
+            $q->where('product_name', 'like', '%' . $search . '%')
+            )
+            ->paginate($size, ['*'], 'page', $page);
     }
 
     public function findById($id)
