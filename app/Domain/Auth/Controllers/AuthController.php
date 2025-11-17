@@ -3,6 +3,7 @@
 namespace App\Domain\Auth\Controllers;
 
 use App\Domain\Auth\Requests\LoginRequest;
+use App\Domain\Auth\Requests\RegisterRequest;
 use App\Domain\Auth\Services\AuthService;
 use App\Domain\Auth\Resources\AuthResource;
 use App\Http\Controllers\Controller;
@@ -52,6 +53,38 @@ class AuthController extends Controller
             $this->service->respondWithToken($token),
             'Login successful'
         );
+    }
+
+    /**
+     * @OA\Post(
+     * path="/api/auth/register",
+     * summary="Register a new user",
+     * tags={"Authentication"},
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * required={"name", "email", "password"},
+     * @OA\Property(property="name", type="string", example="John Doe"),
+     * @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     * @OA\Property(property="password", type="string", format="password", example="password123")
+     * )
+     * ),
+     * @OA\Response(
+     * response=201,
+     * description="User registered successfully",
+     * @OA\JsonContent(
+     * @OA\Property(property="status", type="boolean", example=true),
+     * @OA\Property(property="message", type="string", example="User registered successfully")
+     * )
+     * ),
+     * @OA\Response(response=422, description="Validation Error")
+     * )
+     */
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        $this->service->register($request->validated());
+
+        return $this->success(null, 'User registered successfully', 201);
     }
 
     /**
